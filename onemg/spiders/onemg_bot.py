@@ -7,7 +7,7 @@ import json, os
 class OnemgBotSpider(SitemapSpider):
     name = '1mgBot'
     allowed_domains = ['1mg.com']
-    max_length = 2
+    max_length = 47
     sitemap_urls = ["https://www.1mg.com/labs/sitemap_lab_test_{}.xml".format(i) for i in range(1, max_length)]
 
     print(sitemap_urls)
@@ -27,15 +27,20 @@ class OnemgBotSpider(SitemapSpider):
             # print(type(data))
             # print(isinstance(data, dict))
             if isinstance(data, dict):
-                with open("asddsad.json", "w") as f:
-                    json.dump(data, f)
-                data['url'] = response.url
+                # with open("asddsad.json", "w") as f:
+                #     json.dump(data, f)
                 for inventory in data['test']['data']['inventories']:
                     lab = inventory['lab']
                     del lab['accreditation']
                     for test in inventory['tests']:
                         test.update(test['priceInfo'])
                         del test['priceInfo']
+                        if "interpretation" in test:
+                            del test["interpretation"]
+                        if "faqs" in test:
+                            del test['faqs']
+                        if "testInfo" in test:
+                            del test['testInfo']
                         yield {
                             **lab,
                             **test,
